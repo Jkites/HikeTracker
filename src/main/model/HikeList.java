@@ -106,8 +106,10 @@ public class HikeList {
     // EFFECTS: returns string representation of HikeList
     public String toString() {
         String result = "";
+        int index = 0;
         for (Hike h: hikes) {
-            result = result + h.toString() + "\n";
+            result = result + index +  ". " + h.toString() + "\n";
+            index++;
         }
         return result;
     }

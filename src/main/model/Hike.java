@@ -4,7 +4,7 @@ package model;
 public class Hike {
     private String name;    // name of hike
     private double length;  // length of hike
-    private int rating;     // rating of hike out of 10
+    private int rating;     // rating of hike from 1 out of 10
 
     // REQUIRES: name is nonzero length
     // EFFECTS: this name becomes name, if passed in length
