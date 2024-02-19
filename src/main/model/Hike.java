@@ -67,7 +67,7 @@ public class Hike {
         }
     }
 
-    // EFFECTS: returns string representation of string
+    // EFFECTS: returns string representation of Hike
     public String toString() {
         return "Name: " + name + ", Length: " + length + ", Rating: " + rating;
     }
