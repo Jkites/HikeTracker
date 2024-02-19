@@ -108,7 +108,6 @@ public class HikeListTest {
         hl1.addHike(h1);
         hl1.addHike(h2);
         hl1.addHike(h3);
-        System.out.println(hl1.toString());
         assertEquals("0. " + h1.toString() + "\n1. " + h2.toString() + "\n2. " + h3.toString() + "\n", hl1.toString());
     }
 }
