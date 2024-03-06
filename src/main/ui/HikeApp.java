@@ -2,12 +2,17 @@ package ui;
 
 import model.Hike;
 import model.HikeList;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 // Hike tracker application
 public class HikeApp {
+    private static final String JSON_STORE = "./data/hikeList.json";
     private HikeList hikeList;
     private Scanner sc;
 
@@ -32,7 +37,12 @@ public class HikeApp {
             if (input.equals("q")) {
                 keepGoing = false;
             } else {
-                processCommand(input);
+                try {
+                    processCommand(input);
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input");
+                    sc.nextLine();
+                }
             }
         }
         System.out.println("Exiting.");
@@ -54,18 +64,15 @@ public class HikeApp {
         System.out.println("\t4 - Sort hikes by length");
         System.out.println("\t5 - Sort hikes by name");
         System.out.println("\t6 - Sort hikes by rating");
+        System.out.println("\t7 - Load hikes from file");
+        System.out.println("\t8 - Save hikes to file");
         System.out.println("\tq -> quit");
     }
 
     // EFFECTS: processes user command
     private void processCommand(String input) {
         if (input.equals("1")) {
-            try {
-                addHike();
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input");
-                sc.nextLine();
-            }
+            addHike();
         } else if (input.equals("2")) {
             removeHike();
         } else if (input.equals("3")) {
@@ -76,6 +83,10 @@ public class HikeApp {
             sortHikeByName();
         } else if (input.equals("6")) {
             sortHikeByRating();
+        }  else if (input.equals("7")) {
+            saveHikeList();
+        } else if (input.equals("8")) {
+            loadHikeList();
         } else {
             System.out.println("Invalid input");
         }
@@ -141,5 +152,30 @@ public class HikeApp {
     private void sortHikeByRating() {
         hikeList.sortByRating();
         System.out.println("Here's the updated list! \n" + hikeList);
+    }
+
+    // EFFECTS: saves the workroom to file
+    private void saveHikeList() {
+        try {
+            JsonWriter jsonWriter = new JsonWriter(JSON_STORE);
+            jsonWriter.open();
+            jsonWriter.write(hikeList);
+            jsonWriter.close();
+            System.out.println("Saved your hikes to " + JSON_STORE);
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file: " + JSON_STORE);
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: loads workroom from file
+    private void loadHikeList() {
+        try {
+            JsonReader jsonReader = new JsonReader(JSON_STORE);
+            hikeList = jsonReader.read();
+            System.out.println("Loaded your hikes from " + JSON_STORE);
+        } catch (IOException e) {
+            System.out.println("Unable to read from file: " + JSON_STORE);
+        }
     }
 }
