@@ -1,10 +1,14 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import persistence.Writable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 // Represents a list of hikes
-public class HikeList {
+public class HikeList implements Writable {
     private List<Hike> hikes;
 
     public HikeList() {
@@ -112,5 +116,23 @@ public class HikeList {
             index++;
         }
         return result;
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("hikes", hikesToJson());
+        return json;
+    }
+
+    // EFFECTS: returns things in this workroom as a JSON array
+    private JSONArray hikesToJson() {
+        JSONArray jsonArray = new JSONArray();
+
+        for (Hike h : hikes) {
+            jsonArray.put(h.toJson());
+        }
+
+        return jsonArray;
     }
 }

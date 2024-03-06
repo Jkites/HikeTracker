@@ -1,7 +1,10 @@
 package model;
 
+import org.json.JSONObject;
+import persistence.Writable;
+
 // Represents a hike having a name and length (in kilometers)
-public class Hike {
+public class Hike implements Writable {
     private String name;    // name of hike
     private double length;  // length of hike
     private int rating;     // rating of hike from 1 out of 10
@@ -70,5 +73,15 @@ public class Hike {
     // EFFECTS: returns string representation of Hike
     public String toString() {
         return "Name: " + name + ", Length: " + length + ", Rating: " + rating;
+    }
+
+    // EFFECTS: returns
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("name", name);
+        json.put("length", length);
+        json.put("rating", rating);
+        return json;
     }
 }
