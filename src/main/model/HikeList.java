@@ -21,7 +21,7 @@ public class HikeList implements Writable {
         hikes.add(hike);
     }
 
-    // REQUIRES: hikes is not empty
+    // REQUIRES: hikes is not empty, index < hikes.size()
     // MODIFIES: this
     // EFFECTS: removes hike at given index
     public void removeHike(int index) {

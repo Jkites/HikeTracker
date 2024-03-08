@@ -1,0 +1,17 @@
+{"hikes": [
+  {
+    "name": "Rattlesnake",
+    "length": 3,
+    "rating": 3
+  },
+  {
+    "name": "Battle",
+    "length": 2,
+    "rating": 4
+  },
+  {
+    "name": "Certain",
+    "length": 1,
+    "rating": 2
+  }
+]}

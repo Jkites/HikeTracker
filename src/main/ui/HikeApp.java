@@ -84,9 +84,9 @@ public class HikeApp {
         } else if (input.equals("6")) {
             sortHikeByRating();
         }  else if (input.equals("7")) {
-            saveHikeList();
-        } else if (input.equals("8")) {
             loadHikeList();
+        } else if (input.equals("8")) {
+            saveHikeList();
         } else {
             System.out.println("Invalid input");
         }
@@ -154,7 +154,7 @@ public class HikeApp {
         System.out.println("Here's the updated list! \n" + hikeList);
     }
 
-    // EFFECTS: saves the workroom to file
+    // EFFECTS: saves the hike list to file
     private void saveHikeList() {
         try {
             JsonWriter jsonWriter = new JsonWriter(JSON_STORE);
@@ -168,7 +168,7 @@ public class HikeApp {
     }
 
     // MODIFIES: this
-    // EFFECTS: loads workroom from file
+    // EFFECTS: loads hike list from file
     private void loadHikeList() {
         try {
             JsonReader jsonReader = new JsonReader(JSON_STORE);

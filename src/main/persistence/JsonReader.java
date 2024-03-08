@@ -19,7 +19,7 @@ public class JsonReader {
         this.source = source;
     }
 
-    // EFFECTS: reads workroom from file and returns it;
+    // EFFECTS: reads hike list from file and returns it;
     // throws IOException if an error occurs reading data from file
     public HikeList read() throws IOException {
         String jsonData = readFile(source);
@@ -48,10 +48,10 @@ public class JsonReader {
     // MODIFIES: hl
     // EFFECTS: parses hikes from JSON object and adds them to hike list
     private void addHikes(HikeList hl, JSONObject jsonObject) {
-        JSONArray jsonArray = jsonObject.getJSONArray("thingies");
+        JSONArray jsonArray = jsonObject.getJSONArray("hikes");
         for (Object json : jsonArray) {
-            JSONObject nextThingy = (JSONObject) json;
-            addHike(hl, nextThingy);
+            JSONObject nextHike = (JSONObject) json;
+            addHike(hl, nextHike);
         }
     }
 
