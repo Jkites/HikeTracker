@@ -5,19 +5,26 @@ import model.HikeList;
 import persistence.JsonReader;
 import persistence.JsonWriter;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 // Hike tracker application
-public class HikeApp {
+public class HikeApp extends JFrame {
+    public static final int WIDTH = 1000;
+    public static final int HEIGHT = 700;
     private static final String JSON_STORE = "./data/hikeList.json";
     private HikeList hikeList;
     private Scanner sc;
 
     // EFFECTS: runs the hike application
     public HikeApp() {
+        super("Hike Tracker");
         runApp();
     }
 
@@ -49,10 +56,37 @@ public class HikeApp {
     }
 
     // MODIFIES: this
-    // EFFECTS: initializes list of hikes
+    // EFFECTS: initializes list of hikes and JFrame window
     private void init() {
         hikeList = new HikeList();
+        setLayout(new BorderLayout()); // MOVE to display??/
+        setMinimumSize(new Dimension(WIDTH, HEIGHT));
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        addButtons();
+        setVisible(true);
         sc = new Scanner(System.in);
+    }
+
+    private void addButtons() {
+        JPanel buttonArea = new JPanel();
+        buttonArea.setLayout(new BorderLayout());
+        JPanel hikePanel = new JPanel();
+        JButton viewButton = new JButton("View Hike");
+        JButton addButton = new JButton("Add Hike");
+        JButton sortButton = new JButton("Sort Hike");
+        viewButton.addActionListener(new ViewHikeClickHandler());
+        addButton.addActionListener(new AddHikeClickHandler());
+        sortButton.addActionListener(new SortHikeClickHandler());
+        hikePanel.add(viewButton);
+        JPanel addPanel = new JPanel();
+        addPanel.add(addButton);
+        JPanel sortPanel = new JPanel();
+        sortPanel.add(sortButton);
+        buttonArea.add(hikePanel, BorderLayout.WEST);
+        buttonArea.add(addPanel, BorderLayout.CENTER);
+        buttonArea.add(sortPanel, BorderLayout.EAST);
+        add(buttonArea);
     }
 
     // EFFECTS: displays menu of option to user
@@ -176,6 +210,33 @@ public class HikeApp {
             System.out.println("Loaded your hikes from " + JSON_STORE);
         } catch (IOException e) {
             System.out.println("Unable to read from file: " + JSON_STORE);
+        }
+    }
+
+    private class ViewHikeClickHandler implements ActionListener {
+
+        // EFFECTS:
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            viewHike(); //TODO: Re implement based off text field
+        }
+    }
+
+    private class AddHikeClickHandler implements ActionListener {
+
+        // EFFECTS:
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            addHike(); // TODO: Re implement based off text field
+        }
+    }
+
+    private class SortHikeClickHandler implements ActionListener {
+
+        // EFFECTS:
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            //TODO: new menu for which kind of sorting
         }
     }
 }
