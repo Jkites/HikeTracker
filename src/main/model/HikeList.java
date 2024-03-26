@@ -125,7 +125,7 @@ public class HikeList implements Writable {
         return json;
     }
 
-    // EFFECTS: returns things in this workroom as a JSON array
+    // EFFECTS: returns hikes in this hike list as a JSON array
     private JSONArray hikesToJson() {
         JSONArray jsonArray = new JSONArray();
 

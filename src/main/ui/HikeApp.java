@@ -6,12 +6,14 @@ import persistence.JsonReader;
 import persistence.JsonWriter;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 // Hike tracker application
@@ -63,11 +65,13 @@ public class HikeApp extends JFrame {
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        addButtons();
+        //addButtons();
+        addTabs();
         setVisible(true);
         sc = new Scanner(System.in);
     }
 
+    // TEST METHOD
     private void addButtons() {
         JPanel buttonArea = new JPanel();
         buttonArea.setLayout(new BorderLayout());
@@ -87,6 +91,56 @@ public class HikeApp extends JFrame {
         buttonArea.add(addPanel, BorderLayout.CENTER);
         buttonArea.add(sortPanel, BorderLayout.EAST);
         add(buttonArea);
+    }
+
+    // EFFECTS: initializes the tabs and each page
+    private void addTabs() {
+        // create hike panel, add panel, save/load panel
+        // create hike panel
+        JPanel hikePanel = createHikePanel();
+        // create add panel
+        // create save panel
+        // add them to tab panel (which will be the main panel)
+        JTabbedPane tabPane = new JTabbedPane();
+        tabPane.addTab("Hikes", null, hikePanel, "View hikes");
+        add(tabPane);
+    }
+
+    // EFFECTS: creates hike tab
+    private JPanel createHikePanel() {
+        JPanel hikeLeftPanel = new JPanel();
+        //JTable table = new JTable();
+        JScrollPane scrollPane = new JScrollPane(populateHikes());
+        hikeLeftPanel.add(scrollPane);
+        hikeLeftPanel.setLayout(new BoxLayout(hikeLeftPanel, BoxLayout.PAGE_AXIS));
+        JPanel buttonPanel = getButtonPanel();
+        JPanel hikePanel = new JPanel();
+        //hikePanel.setLayout();
+        hikePanel.setLayout(new BoxLayout(hikePanel, BoxLayout.LINE_AXIS));
+        hikePanel.add(hikeLeftPanel);
+        hikePanel.add(buttonPanel);
+        return hikePanel;
+    }
+
+    // EFFECTS: creates button panel for hike tab
+    private JPanel getButtonPanel() {
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
+        JButton sortLengthButton = new JButton("Sort by Length"); //still need to implement listener
+        JButton sortNameButton = new JButton("Sort by Name");
+        JButton sortRatingButton = new JButton("Sort by Rating");
+        buttonPanel.add(sortLengthButton, BorderLayout.NORTH);
+        buttonPanel.add(sortNameButton, BorderLayout.CENTER);
+        buttonPanel.add(sortRatingButton, BorderLayout.SOUTH);
+        return buttonPanel;
+    }
+
+    // EFFECTS: creates hike list text representation
+    private JTextField populateHikes() {
+        JTextField hikeText = new JTextField();
+        hikeText.setEditable(false);
+        hikeText.setText(viewHike());
+        return hikeText;
     }
 
     // EFFECTS: displays menu of option to user
@@ -162,9 +216,9 @@ public class HikeApp extends JFrame {
         }
     }
 
-    // EFFECTS: displays current hike list to user
-    private void viewHike() {
-        System.out.println("Here's your list of hikes! \n" + hikeList);
+    // EFFECTS: returns current hike list to user
+    private String viewHike() {
+        return "Here's your list of hikes! \n" + hikeList;
     }
 
     // MODIFIES: this
