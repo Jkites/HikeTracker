@@ -21,3 +21,17 @@ view my hikes easily.
 - As a user, I want to be able to have the option to save my hikes
 - As a user, I want to be able to have the option to load my hikes from a file
  
+# Instructions for Grader
+- You can generate the first required action related to the user story "adding multiple Xs to a 
+Y" by clicking the add tab and inputting valid information into all the text fields,
+then clicking the "Add" button to add a hike to the Hike List.
+- You can generate the second required action related to the user story "adding multiple Xs to a
+Y" by clicking the remove tab, and inputting a valid index number into the text field, then clicking 
+the remove button, in order to remove the hike at that index number from the Hike List
+- You can view all the hikes by clicking the "Hikes" tab
+- You can locate my visual component after successfully adding a hike to the hike list. This image will
+persist until the program is closed.
+- You can save the state of my application by going to the save/load tab and clicking the "Save to file" button. 
+This will save the hike list data into a json file.
+- You can reload the state of my application by going to the save/load tab and clicking the "Load from file" button. 
+- This will load a hike list into the application from a json file, if the file exists.

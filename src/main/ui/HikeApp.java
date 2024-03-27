@@ -6,14 +6,10 @@ import persistence.JsonReader;
 import persistence.JsonWriter;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.Scanner;
 
 // Hike tracker application
@@ -21,6 +17,8 @@ public class HikeApp extends JFrame {
     public static final int WIDTH = 1000;
     public static final int HEIGHT = 700;
     private static final String JSON_STORE = "./data/hikeList.json";
+    private final HikeListener hikeListener = new HikeListener(this);
+    private JTabbedPane tabPane;
     private HikeList hikeList;
     private Scanner sc;
 
@@ -31,7 +29,7 @@ public class HikeApp extends JFrame {
     }
 
     // MODIFIES: this
-    // EFFECTS: processes initial user input
+    // EFFECTS: processes initial user input in console
     private void runApp() {
         boolean keepGoing = true;
         String input;
@@ -61,61 +59,38 @@ public class HikeApp extends JFrame {
     // EFFECTS: initializes list of hikes and JFrame window
     private void init() {
         hikeList = new HikeList();
-        setLayout(new BorderLayout()); // MOVE to display??/
+        setLayout(new BorderLayout());
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        //addButtons();
         addTabs();
         setVisible(true);
         sc = new Scanner(System.in);
     }
 
-    // TEST METHOD
-    private void addButtons() {
-        JPanel buttonArea = new JPanel();
-        buttonArea.setLayout(new BorderLayout());
-        JPanel hikePanel = new JPanel();
-        JButton viewButton = new JButton("View Hike");
-        JButton addButton = new JButton("Add Hike");
-        JButton sortButton = new JButton("Sort Hike");
-        viewButton.addActionListener(new ViewHikeClickHandler());
-        addButton.addActionListener(new AddHikeClickHandler());
-        sortButton.addActionListener(new SortHikeClickHandler());
-        hikePanel.add(viewButton);
-        JPanel addPanel = new JPanel();
-        addPanel.add(addButton);
-        JPanel sortPanel = new JPanel();
-        sortPanel.add(sortButton);
-        buttonArea.add(hikePanel, BorderLayout.WEST);
-        buttonArea.add(addPanel, BorderLayout.CENTER);
-        buttonArea.add(sortPanel, BorderLayout.EAST);
-        add(buttonArea);
-    }
-
+    // MODIFIES: this
     // EFFECTS: initializes the tabs and each page
     private void addTabs() {
-        // create hike panel, add panel, save/load panel
-        // create hike panel
         JPanel hikePanel = createHikePanel();
-        // create add panel
-        // create save panel
-        // add them to tab panel (which will be the main panel)
-        JTabbedPane tabPane = new JTabbedPane();
+        JPanel addPanel = createAddPanel();
+        JPanel savePanel = createSavePanel();
+        JPanel removePanel = createRemovePanel();
+        tabPane = new JTabbedPane();
         tabPane.addTab("Hikes", null, hikePanel, "View hikes");
+        tabPane.addTab("Add", null, addPanel, "Add a new hike");
+        tabPane.addTab("Save/Load", null, savePanel, "Save or load data");
+        tabPane.addTab("Remove", null, removePanel, "Remove a hike");
         add(tabPane);
     }
 
     // EFFECTS: creates hike tab
     private JPanel createHikePanel() {
         JPanel hikeLeftPanel = new JPanel();
-        //JTable table = new JTable();
         JScrollPane scrollPane = new JScrollPane(populateHikes());
         hikeLeftPanel.add(scrollPane);
         hikeLeftPanel.setLayout(new BoxLayout(hikeLeftPanel, BoxLayout.PAGE_AXIS));
         JPanel buttonPanel = getButtonPanel();
         JPanel hikePanel = new JPanel();
-        //hikePanel.setLayout();
         hikePanel.setLayout(new BoxLayout(hikePanel, BoxLayout.LINE_AXIS));
         hikePanel.add(hikeLeftPanel);
         hikePanel.add(buttonPanel);
@@ -129,18 +104,106 @@ public class HikeApp extends JFrame {
         JButton sortLengthButton = new JButton("Sort by Length"); //still need to implement listener
         JButton sortNameButton = new JButton("Sort by Name");
         JButton sortRatingButton = new JButton("Sort by Rating");
+        sortLengthButton.setActionCommand("SLength");
+        sortNameButton.setActionCommand("SName");
+        sortRatingButton.setActionCommand("SRating");
+        sortLengthButton.addActionListener(hikeListener);
+        sortNameButton.addActionListener(hikeListener);
+        sortRatingButton.addActionListener(hikeListener);
         buttonPanel.add(sortLengthButton, BorderLayout.NORTH);
         buttonPanel.add(sortNameButton, BorderLayout.CENTER);
         buttonPanel.add(sortRatingButton, BorderLayout.SOUTH);
         return buttonPanel;
     }
 
-    // EFFECTS: creates hike list text representation
-    private JTextField populateHikes() {
-        JTextField hikeText = new JTextField();
+    // EFFECTS: creates hike list text area representation
+    private JTextArea populateHikes() {
+        JTextArea hikeText = new JTextArea();
         hikeText.setEditable(false);
         hikeText.setText(viewHike());
         return hikeText;
+    }
+
+    // MODIFIES: HikeListener
+    // EFFECTS: creates tab for adding new hikes
+    private JPanel createAddPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        String[] labelStrings = {"Name: ", "Length (any number): ", "Rating (1-10): "};
+        JTextField[] fields = new JTextField[labelStrings.length];
+        JTextField nameField = hikeListener.getNameField();
+        fields[0] = nameField;
+        JTextField lengthField = hikeListener.getLengthField();
+        JTextField ratingField = hikeListener.getRatingField();
+        fields[1] = lengthField;
+        fields[2] = ratingField;
+        JLabel[] labels = associateLabels(fields, labelStrings);
+        JButton saveButton = new JButton("Add");
+        saveButton.setActionCommand("Add");
+        saveButton.addActionListener(hikeListener);
+        for (int i = 0; i < labels.length; i++) {
+            panel.add(labels[i]);
+            panel.add(fields[i]);
+        }
+        JLabel label = hikeListener.getImageLabel();
+        label.setVisible(false);
+        panel.add(saveButton);
+        panel.add(label);
+        return panel;
+    }
+
+    // EFFECTS: associates fields and labels and adds listeners
+    private JLabel[] associateLabels(JTextField[] fields, String[] labelStrings) {
+        JLabel[] labels = new JLabel[labelStrings.length];
+        for (int i = 0; i < labelStrings.length; i++) {
+            labels[i] = new JLabel(labelStrings[i], JLabel.TRAILING);
+            labels[i].setLabelFor(fields[i]);
+            fields[i].addActionListener(hikeListener);
+        }
+        return labels;
+    }
+
+    // EFFECTS: returns a tab for saving
+    private JPanel createSavePanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        JButton saveToFileButton = new JButton("Save to file");
+        JButton loadButton = new JButton("Load from file");
+        saveToFileButton.setActionCommand("Save");
+        loadButton.setActionCommand("Load");
+        saveToFileButton.addActionListener(hikeListener);
+        loadButton.addActionListener(hikeListener);
+        panel.add(saveToFileButton);
+        panel.add(loadButton);
+        return panel;
+    }
+
+    // EFFECTS: returns a tab for removing hikes
+    private JPanel createRemovePanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        JLabel label = new JLabel("Enter index of hike to remove: ");
+        JTextField field = hikeListener.getIndexField();
+        field.addActionListener(hikeListener);
+        JButton removeButton = new JButton("Remove");
+        removeButton.setActionCommand("Remove");
+        removeButton.addActionListener(hikeListener);
+        panel.add(label);
+        panel.add(field);
+        panel.add(removeButton);
+        return panel;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: refreshes hike panel for user to see changes
+    public void updateHikeDisplay() {
+        int index = tabPane.indexOfTab("Hikes");
+        tabPane.setComponentAt(index, createHikePanel());
+    }
+
+    // EFFECTS: opens a message dialog for the user
+    public void sendMessage(String message) {
+        JOptionPane.showMessageDialog(null, message, "User message", JOptionPane.INFORMATION_MESSAGE);
     }
 
     // EFFECTS: displays menu of option to user
@@ -162,7 +225,7 @@ public class HikeApp extends JFrame {
         if (input.equals("1")) {
             addHike();
         } else if (input.equals("2")) {
-            removeHike();
+            // removeHike();
         } else if (input.equals("3")) {
             viewHike();
         } else if (input.equals("4")) {
@@ -183,7 +246,7 @@ public class HikeApp extends JFrame {
     // MODIFIES: this
     // EFFECTS: prompts user for name, length, and rating of hike then
     //          adds a hike of specified name, length, and rating to hike list
-    private void addHike() throws InputMismatchException {
+    public void addHike() throws InputMismatchException {
         String name;
         int rating;
         double length;
@@ -200,97 +263,96 @@ public class HikeApp extends JFrame {
     }
 
     // MODIFIES: this
-    // EFFECTS: prompt user for index to remove, then
-    //          removes hike at specified index
-    private void removeHike() {
-        int index;
-        System.out.println("Enter index of hike to remove");
-        System.out.println("Here is current list:");
-        System.out.println(hikeList);
-        index = sc.nextInt();
-        sc.nextLine();
+    // EFFECTS: adds a hike of specified name, length, and rating to hike list
+    //          otherwise, sends message of error
+    public void addHike(String name, String stringLength, String stringRating) {
         try {
-            hikeList.removeHike(index);
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("Invalid index");
+            double length = Double.parseDouble(stringLength);
+            int rating = Integer.parseInt(stringRating);
+            Hike newHike = new Hike(name, length, rating);
+            System.out.println("Adding " + newHike + " to list!");
+            sendMessage("Adding " + newHike + " to list!");
+            hikeList.addHike(newHike);
+            hikeListener.getImageLabel().setVisible(true);
+        } catch (NumberFormatException e) {
+            sendMessage("Invalid Input");
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: prompt user for index to remove, then
+    //          removes hike at specified index
+    public void removeHike(String index) {
+        try {
+            int i = Integer.parseInt(index);
+            try {
+                hikeList.removeHike(i);
+                sendMessage("Removed hike at index " + i);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("Invalid index");
+                sendMessage("Invalid index");
+            }
+        } catch (NumberFormatException e) {
+            sendMessage("Index not readable");
+        }
+        System.out.println("Enter index of hike to remove");
+        System.out.println("Here is current list:");
+        System.out.println(hikeList);
+    }
+
     // EFFECTS: returns current hike list to user
-    private String viewHike() {
+    public String viewHike() {
         return "Here's your list of hikes! \n" + hikeList;
     }
 
     // MODIFIES: this
     // EFFECTS: sorts hike by length then displays sorted current hike list
-    private void sortHikeByLength() {
+    public void sortHikeByLength() {
         hikeList.sortByLength();
         System.out.println("Here's the updated list! \n" + hikeList);
     }
 
     // MODIFIES: this
     // EFFECTS: sorts hikes by name then displays sorted current hike list
-    private void sortHikeByName() {
+    public void sortHikeByName() {
         hikeList.sortByName();
         System.out.println("Here's the updated list! \n" + hikeList);
     }
 
     // MODIFIES: this
     // EFFECTS: sorts hikes by rating then displays sorted current hike list
-    private void sortHikeByRating() {
+    public void sortHikeByRating() {
         hikeList.sortByRating();
         System.out.println("Here's the updated list! \n" + hikeList);
     }
 
     // EFFECTS: saves the hike list to file
-    private void saveHikeList() {
+    public void saveHikeList() {
         try {
             JsonWriter jsonWriter = new JsonWriter(JSON_STORE);
             jsonWriter.open();
             jsonWriter.write(hikeList);
             jsonWriter.close();
             System.out.println("Saved your hikes to " + JSON_STORE);
+            sendMessage("Saved your hikes to " + JSON_STORE);
         } catch (FileNotFoundException e) {
             System.out.println("Unable to write to file: " + JSON_STORE);
+            sendMessage("Unable to write to file: " + JSON_STORE);
         }
     }
 
     // MODIFIES: this
     // EFFECTS: loads hike list from file
-    private void loadHikeList() {
+    public void loadHikeList() {
         try {
             JsonReader jsonReader = new JsonReader(JSON_STORE);
             hikeList = jsonReader.read();
             System.out.println("Loaded your hikes from " + JSON_STORE);
+            sendMessage("Loaded your hikes from " + JSON_STORE);
         } catch (IOException e) {
             System.out.println("Unable to read from file: " + JSON_STORE);
+            sendMessage("Unable to read from file: " + JSON_STORE);
         }
     }
 
-    private class ViewHikeClickHandler implements ActionListener {
-
-        // EFFECTS:
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            viewHike(); //TODO: Re implement based off text field
-        }
-    }
-
-    private class AddHikeClickHandler implements ActionListener {
-
-        // EFFECTS:
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            addHike(); // TODO: Re implement based off text field
-        }
-    }
-
-    private class SortHikeClickHandler implements ActionListener {
-
-        // EFFECTS:
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            //TODO: new menu for which kind of sorting
-        }
-    }
 }
