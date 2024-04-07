@@ -1,5 +1,7 @@
 package ui;
 
+import model.Event;
+import model.EventLog;
 import model.Hike;
 import model.HikeList;
 import persistence.JsonReader;
@@ -7,13 +9,15 @@ import persistence.JsonWriter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 // Hike tracker application
-public class HikeApp extends JFrame {
+public class HikeApp extends JFrame implements WindowListener {
     public static final int WIDTH = 1000;
     public static final int HEIGHT = 700;
     private static final String JSON_STORE = "./data/hikeList.json";
@@ -25,7 +29,8 @@ public class HikeApp extends JFrame {
     // EFFECTS: runs the hike application
     public HikeApp() {
         super("Hike Tracker");
-        runApp();
+        addWindowListener(this);
+        init();
     }
 
     // MODIFIES: this
@@ -270,7 +275,7 @@ public class HikeApp extends JFrame {
             double length = Double.parseDouble(stringLength);
             int rating = Integer.parseInt(stringRating);
             Hike newHike = new Hike(name, length, rating);
-            System.out.println("Adding " + newHike + " to list!");
+            //System.out.println("Adding " + newHike + " to list!");
             sendMessage("Adding " + newHike + " to list!");
             hikeList.addHike(newHike);
             hikeListener.getImageLabel().setVisible(true);
@@ -289,15 +294,15 @@ public class HikeApp extends JFrame {
                 hikeList.removeHike(i);
                 sendMessage("Removed hike at index " + i);
             } catch (IndexOutOfBoundsException e) {
-                System.out.println("Invalid index");
+                //System.out.println("Invalid index");
                 sendMessage("Invalid index");
             }
         } catch (NumberFormatException e) {
             sendMessage("Index not readable");
         }
-        System.out.println("Enter index of hike to remove");
-        System.out.println("Here is current list:");
-        System.out.println(hikeList);
+        //System.out.println("Enter index of hike to remove");
+        //System.out.println("Here is current list:");
+        //System.out.println(hikeList);
     }
 
     // EFFECTS: returns current hike list to user
@@ -309,21 +314,21 @@ public class HikeApp extends JFrame {
     // EFFECTS: sorts hike by length then displays sorted current hike list
     public void sortHikeByLength() {
         hikeList.sortByLength();
-        System.out.println("Here's the updated list! \n" + hikeList);
+        //System.out.println("Here's the updated list! \n" + hikeList);
     }
 
     // MODIFIES: this
     // EFFECTS: sorts hikes by name then displays sorted current hike list
     public void sortHikeByName() {
         hikeList.sortByName();
-        System.out.println("Here's the updated list! \n" + hikeList);
+        //System.out.println("Here's the updated list! \n" + hikeList);
     }
 
     // MODIFIES: this
     // EFFECTS: sorts hikes by rating then displays sorted current hike list
     public void sortHikeByRating() {
         hikeList.sortByRating();
-        System.out.println("Here's the updated list! \n" + hikeList);
+        //System.out.println("Here's the updated list! \n" + hikeList);
     }
 
     // EFFECTS: saves the hike list to file
@@ -333,10 +338,10 @@ public class HikeApp extends JFrame {
             jsonWriter.open();
             jsonWriter.write(hikeList);
             jsonWriter.close();
-            System.out.println("Saved your hikes to " + JSON_STORE);
+            //System.out.println("Saved your hikes to " + JSON_STORE);
             sendMessage("Saved your hikes to " + JSON_STORE);
         } catch (FileNotFoundException e) {
-            System.out.println("Unable to write to file: " + JSON_STORE);
+            //System.out.println("Unable to write to file: " + JSON_STORE);
             sendMessage("Unable to write to file: " + JSON_STORE);
         }
     }
@@ -347,12 +352,48 @@ public class HikeApp extends JFrame {
         try {
             JsonReader jsonReader = new JsonReader(JSON_STORE);
             hikeList = jsonReader.read();
-            System.out.println("Loaded your hikes from " + JSON_STORE);
+            //System.out.println("Loaded your hikes from " + JSON_STORE);
             sendMessage("Loaded your hikes from " + JSON_STORE);
         } catch (IOException e) {
-            System.out.println("Unable to read from file: " + JSON_STORE);
+            //System.out.println("Unable to read from file: " + JSON_STORE);
             sendMessage("Unable to read from file: " + JSON_STORE);
         }
     }
 
+    @Override
+    public void windowOpened(WindowEvent e) {
+        // no effect
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        for (Event event : EventLog.getInstance()) {
+            System.out.println(event);
+        }
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+        // no effect
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+        // no effect
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+        // no effect
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+        // no effect
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+        // no effect
+    }
 }

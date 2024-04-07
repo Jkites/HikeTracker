@@ -35,3 +35,44 @@ persist until the program is closed.
 This will save the hike list data into a json file.
 - You can reload the state of my application by going to the save/load tab and clicking the "Load from file" button. 
 - This will load a hike list into the application from a json file, if the file exists.
+
+# Phase 4: Task 2
+Sat Apr 06 22:53:30 PDT 2024
+
+New Hike added to HikeList
+
+Sat Apr 06 22:53:43 PDT 2024
+
+New Hike added to HikeList
+
+Sat Apr 06 22:53:48 PDT 2024
+
+New Hike added to HikeList
+
+Sat Apr 06 22:53:51 PDT 2024
+
+HikeList sorted by Length
+
+Sat Apr 06 22:53:52 PDT 2024
+
+HikeList sorted alphabetically by Name
+
+Sat Apr 06 22:53:53 PDT 2024
+
+HikeList sorted by Rating
+
+Sat Apr 06 22:53:58 PDT 2024
+
+Hike at 1 removed
+
+Sat Apr 06 22:54:05 PDT 2024
+
+New Hike added to HikeList
+
+Sat Apr 06 22:54:05 PDT 2024
+
+New Hike added to HikeList
+
+Sat Apr 06 22:54:15 PDT 2024
+
+HikeList sorted by Rating

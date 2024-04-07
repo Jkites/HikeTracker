@@ -19,6 +19,7 @@ public class HikeList implements Writable {
     // EFFECTS: adds given hike into the list
     public void addHike(Hike hike) {
         hikes.add(hike);
+        EventLog.getInstance().logEvent(new Event("New Hike added to HikeList"));
     }
 
     // REQUIRES: hikes is not empty, index < hikes.size()
@@ -26,6 +27,8 @@ public class HikeList implements Writable {
     // EFFECTS: removes hike at given index
     public void removeHike(int index) {
         hikes.remove(index);
+        String message = "Hike at " + index + " removed";
+        EventLog.getInstance().logEvent(new Event(message));
     }
 
     // EFFECTS: returns true if hikes is empty, false if not
@@ -50,6 +53,7 @@ public class HikeList implements Writable {
             hikes.set(i, hikes.get(max));
             hikes.set(max, temp);
         }
+        EventLog.getInstance().logEvent(new Event("HikeList sorted by Length"));
     }
 
     // REQUIRES: !hikes.isEmpty()
@@ -69,6 +73,7 @@ public class HikeList implements Writable {
             hikes.set(i, hikes.get(min));
             hikes.set(min, temp);
         }
+        EventLog.getInstance().logEvent(new Event("HikeList sorted alphabetically by Name"));
     }
 
     // REQUIRES: !hikes.isEmpty()
@@ -88,6 +93,7 @@ public class HikeList implements Writable {
             hikes.set(i, hikes.get(max));
             hikes.set(max, temp);
         }
+        EventLog.getInstance().logEvent(new Event("HikeList sorted by Rating"));
     }
 
     // EFFECTS: returns first hike in list with matching name
