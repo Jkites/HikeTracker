@@ -76,3 +76,10 @@ New Hike added to HikeList
 Sat Apr 06 22:54:15 PDT 2024
 
 HikeList sorted by Rating
+
+# Phase 4: Task 3
+When reviewing my code, I think my HikeApp class lacks cohesion, and 
+it would be beneficial to split off its responsibilities into multiple classes.
+For example, the creating of the panel could be split off into one class, and 
+the actual calls of HikeList could be in another class to better follow
+the single responsibility principle. If I had more time I would try to follow this principle better.
